@@ -22,7 +22,6 @@ public partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
-        txtManifestUrl.Text = ManifestUrl;
         Shown += MainForm_Shown;
     }
 
@@ -33,13 +32,13 @@ public partial class MainForm : Form
 
     private async Task DetectGamesAsync()
     {
-        SetStatus("Detecting Steam installation...");
+        SetStatus("Checking your game installation...");
 
         _halfLifeRoot = _detector.DetectHalfLife();
 
         if (_halfLifeRoot == null)
         {
-            SetStatus("CS 1.6 installation not automatically detected.");
+            SetStatus("Game installation was not found automatically.");
             lblCsStatus.Text = "CS 1.6: Not detected";
             lblCzeroStatus.Text = "Condition Zero: Not detected";
             return;
@@ -54,14 +53,14 @@ public partial class MainForm : Form
             : null;
 
         lblCsStatus.Text = _cs16Root != null
-            ? $"CS 1.6: {_cs16Root}"
+            ? "CS 1.6: Found"
             : "CS 1.6: Not found";
 
         lblCzeroStatus.Text = _czeroRoot != null
-            ? $"Condition Zero: {_czeroRoot}"
+            ? "Condition Zero: Found"
             : "Condition Zero: Not found";
 
-        SetStatus("Detection complete.");
+        SetStatus("Game check complete.");
 
         await LoadManifestAsync();
     }
@@ -70,18 +69,18 @@ public partial class MainForm : Form
     {
         try
         {
-            SetStatus("Downloading update manifest...");
+            SetStatus("Loading community data...");
 
-            _manifest = await _manifestService.DownloadAsync(
-                txtManifestUrl.Text.Trim());
+            _manifest = await _manifestService.DownloadAsync(ManifestUrl);
 
             PopulateServers();
 
-            SetStatus($"Manifest loaded: {_manifest.Version}");
+            SetStatus("Community data loaded.");
         }
         catch (Exception ex)
         {
-            SetStatus($"Manifest error: {ex.Message}");
+            SetStatus("Could not load community data.");
+            txtLog.AppendText($"Details: {ex.Message}{Environment.NewLine}");
         }
     }
 
@@ -94,30 +93,28 @@ public partial class MainForm : Form
 
         foreach (var server in _manifest.Servers)
         {
-            clbServers.Items.Add(
-                $"{server.Name}  [{server.Address}]",
-                true);
+            clbServers.Items.Add(server.Name, true);
         }
     }
 
-    private async void btnUpdate_Click(object sender, EventArgs e)
+    private async void btnAddServers_Click(object sender, EventArgs e)
     {
-        await UpdateEverythingAsync();
+        await AddServersAsync();
     }
 
-    private async Task UpdateEverythingAsync()
+    private async Task AddServersAsync()
     {
         if (_manifest == null)
         {
             MessageBox.Show(
-                "The update manifest has not been loaded.",
-                "Updater",
+                "Community data is not loaded yet.",
+                "TargetCS-Gaming.org",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning);
             return;
         }
 
-        btnUpdate.Enabled = false;
+        btnAddServers.Enabled = false;
 
         try
         {
@@ -127,7 +124,7 @@ public partial class MainForm : Form
 
             Directory.CreateDirectory(temporaryDirectory);
 
-            if (chkCs16.Checked && _cs16Root != null)
+            if (_cs16Root != null)
             {
                 await UpdateGameMenuAsync(
                     "CS 1.6",
@@ -136,7 +133,7 @@ public partial class MainForm : Form
                     temporaryDirectory);
             }
 
-            if (chkCzero.Checked && _czeroRoot != null)
+            if (_czeroRoot != null)
             {
                 await UpdateGameMenuAsync(
                     "Condition Zero",
@@ -145,32 +142,30 @@ public partial class MainForm : Form
                     temporaryDirectory);
             }
 
-            if (chkFavorites.Checked)
-            {
-                UpdateFavorites();
-            }
+            UpdateFavorites();
 
-            SetStatus("Update completed successfully.");
+            SetStatus("Everything is ready.");
 
             MessageBox.Show(
-                "The selected updates were installed successfully.",
-                "Complete",
+                "Community content was installed successfully.",
+                "TargetCS-Gaming.org",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            SetStatus($"Update failed: {ex.Message}");
+            SetStatus("Something went wrong.");
+            txtLog.AppendText($"Details: {ex.Message}{Environment.NewLine}");
 
             MessageBox.Show(
-                ex.ToString(),
-                "Update failed",
+                "The update could not be completed.",
+                "TargetCS-Gaming.org",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }
         finally
         {
-            btnUpdate.Enabled = true;
+            btnAddServers.Enabled = true;
         }
     }
 
@@ -181,29 +176,21 @@ public partial class MainForm : Form
         string temporaryDirectory)
     {
         if (string.IsNullOrWhiteSpace(update.GameMenuUrl))
-        {
-            SetStatus($"{gameName}: no GameMenu URL configured.");
             return;
-        }
 
         var target = Path.Combine(
             gameRoot,
             "resource",
             "GameMenu.res");
 
-        SetStatus($"{gameName}: downloading GameMenu.res...");
+        SetStatus($"Updating {gameName} menu...");
 
         var downloaded = await _fileUpdater.DownloadFileAsync(
             update.GameMenuUrl,
             temporaryDirectory);
 
         if (File.Exists(target))
-        {
-            SetStatus($"{gameName}: creating backup...");
             _fileUpdater.Backup(target);
-        }
-
-        SetStatus($"{gameName}: installing GameMenu.res...");
 
         _fileUpdater.Replace(downloaded, target);
     }
@@ -215,7 +202,7 @@ public partial class MainForm : Form
 
         if (_halfLifeRoot == null)
         {
-            SetStatus("Favorites: Half-Life installation not found.");
+            SetStatus("Game installation was not found.");
             return;
         }
 
@@ -223,7 +210,7 @@ public partial class MainForm : Form
 
         if (browser == null)
         {
-            SetStatus("Favorites: ServerBrowser.vdf not found.");
+            SetStatus("Saved server list was not found.");
             return;
         }
 
@@ -240,18 +227,17 @@ public partial class MainForm : Form
 
         if (selected.Count == 0)
         {
-            SetStatus("Favorites: no servers selected.");
+            SetStatus("No servers were selected.");
             return;
         }
 
-        SetStatus("Favorites: creating backup...");
-        _favoriteManager.Backup(browser);
+        SetStatus("Saving selected servers...");
 
-        SetStatus("Favorites: adding servers...");
+        _favoriteManager.Backup(browser);
 
         var added = _favoriteManager.AddServers(browser, selected);
 
-        SetStatus($"Favorites: {added} new server(s) added.");
+        SetStatus($"{added} new server(s) were added.");
     }
 
     private void btnBrowse_Click(object sender, EventArgs e)
@@ -273,14 +259,14 @@ public partial class MainForm : Form
         _czeroRoot = Directory.Exists(czero) ? czero : null;
 
         lblCsStatus.Text = _cs16Root != null
-            ? $"CS 1.6: {_cs16Root}"
+            ? "CS 1.6: Found"
             : "CS 1.6: Not found";
 
         lblCzeroStatus.Text = _czeroRoot != null
-            ? $"Condition Zero: {_czeroRoot}"
+            ? "Condition Zero: Found"
             : "Condition Zero: Not found";
 
-        SetStatus("Installation selected manually.");
+        SetStatus("Game folder selected.");
     }
 
     private void btnRestoreCs_Click(object sender, EventArgs e)
@@ -288,7 +274,7 @@ public partial class MainForm : Form
         try
         {
             if (_cs16Root == null)
-                throw new Exception("CS 1.6 is not detected.");
+                throw new Exception("CS 1.6 was not found.");
 
             var target = Path.Combine(
                 _cs16Root,
@@ -297,11 +283,11 @@ public partial class MainForm : Form
 
             _fileUpdater.Restore(target);
 
-            SetStatus("CS 1.6 GameMenu restored.");
+            SetStatus("CS 1.6 menu restored.");
 
             MessageBox.Show(
-                "CS 1.6 GameMenu.res restored.",
-                "Restore",
+                "CS 1.6 menu restored.",
+                "TargetCS-Gaming.org",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
@@ -320,7 +306,7 @@ public partial class MainForm : Form
         try
         {
             if (_czeroRoot == null)
-                throw new Exception("Condition Zero is not detected.");
+                throw new Exception("Condition Zero was not found.");
 
             var target = Path.Combine(
                 _czeroRoot,
@@ -329,11 +315,11 @@ public partial class MainForm : Form
 
             _fileUpdater.Restore(target);
 
-            SetStatus("Condition Zero GameMenu restored.");
+            SetStatus("Condition Zero menu restored.");
 
             MessageBox.Show(
-                "Condition Zero GameMenu.res restored.",
-                "Restore",
+                "Condition Zero menu restored.",
+                "TargetCS-Gaming.org",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
@@ -361,8 +347,6 @@ public partial class MainForm : Form
         }
 
         lblStatus.Text = text;
-
-        txtLog.AppendText(
-            $"[{DateTime.Now:HH:mm:ss}] {text}{Environment.NewLine}");
+        txtLog.AppendText($"{text}{Environment.NewLine}");
     }
 }
