@@ -1,0 +1,37 @@
+name: Build Windows App
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore "TargetCS-Gaming.org.csproj"
+
+      - name: Build
+        run: dotnet build "TargetCS-Gaming.org.csproj" --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish "TargetCS-Gaming.org.csproj" --configuration Release --runtime win-x64 --self-contained false --output publish
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TargetCS-Gaming.org-win-x64
+          path: publish/

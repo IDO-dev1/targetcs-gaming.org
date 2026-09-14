@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "cs16": {
+    "gameMenuUrl": "https://dashboard.targetcs-gaming.org/updater/cstrike/GameMenu.res"
+  },
+  "czero": {
+    "gameMenuUrl": "https://dashboard.targetcs-gaming.org/updater/czero/GameMenu.res"
+  },
+  "servers": [
+    {
+      "name": "TargetCS Gaming [AWP Deathmatch]",
+      "address": "94.249.150.42:27015"
+    },
+    {
+      "name": "TargetCS Gaming [GunGame]",
+      "address": "94.249.150.42:27016"
+    },
+    {
+      "name": "TargetCS Gaming [Zombie Plague]",
+      "address": "94.249.150.42:27017"
+    },
+    {
+      "name": "TargetCS Gaming [Dust2 | CZ]",
+      "address": "94.249.150.42:27018"
+    },
+    {
+      "name": "TargetCS Gaming [GunGame | CZ]",
+      "address": "94.249.150.42:27020"
+    },
+    {
+      "name": "TargetCS Gaming [AutoMix 5v5]",
+      "address": "94.249.150.42:27017"
+    }
+  ]
+}
