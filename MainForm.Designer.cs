@@ -19,6 +19,7 @@ partial class MainForm
     private Button btnRefresh = null!;
     private Button btnRestoreCs = null!;
     private Button btnRestoreCzero = null!;
+    private Button btnFastDl = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -47,15 +48,16 @@ partial class MainForm
         btnRefresh = new Button();
         btnRestoreCs = new Button();
         btnRestoreCzero = new Button();
+        btnFastDl = new Button();
 
         SuspendLayout();
 
         AutoScaleDimensions = new SizeF(8F, 20F);
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.FromArgb(18, 18, 24);
-        ClientSize = new Size(900, 620);
+        ClientSize = new Size(900, 680);
         ForeColor = Color.White;
-        MinimumSize = new Size(800, 560);
+        MinimumSize = new Size(800, 620);
         StartPosition = FormStartPosition.CenterScreen;
         Text = "TargetCS-Gaming.org";
 
@@ -107,12 +109,17 @@ partial class MainForm
         btnRestoreCzero.Text = "Restore CZ";
         btnRestoreCzero.Click += btnRestoreCzero_Click;
 
+        btnFastDl.Location = new Point(30, 455);
+        btnFastDl.Size = new Size(180, 40);
+        btnFastDl.Text = "Open FastDL";
+        btnFastDl.Click += btnFastDl_Click;
+
         lblActivity.AutoSize = true;
-        lblActivity.Location = new Point(30, 465);
+        lblActivity.Location = new Point(30, 515);
         lblActivity.Text = "Activity";
 
-        txtLog.Location = new Point(30, 495);
-        txtLog.Size = new Size(840, 90);
+        txtLog.Location = new Point(30, 545);
+        txtLog.Size = new Size(840, 80);
         txtLog.Multiline = true;
         txtLog.ReadOnly = true;
         txtLog.ScrollBars = ScrollBars.Vertical;
@@ -120,7 +127,7 @@ partial class MainForm
         txtLog.ForeColor = Color.LightGray;
 
         lblStatus.AutoSize = true;
-        lblStatus.Location = new Point(30, 595);
+        lblStatus.Location = new Point(30, 640);
         lblStatus.Text = "Ready.";
 
         Controls.Add(lblTitle);
@@ -133,6 +140,7 @@ partial class MainForm
         Controls.Add(btnAddServers);
         Controls.Add(btnRestoreCs);
         Controls.Add(btnRestoreCzero);
+        Controls.Add(btnFastDl);
         Controls.Add(lblActivity);
         Controls.Add(txtLog);
         Controls.Add(lblStatus);
