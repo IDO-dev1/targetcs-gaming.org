@@ -31,5 +31,22 @@
       "name": "TargetCS Gaming [AutoMix 5v5]",
       "address": "94.249.150.42:27025"
     }
-  ]
+  ],
+
+  "theme": {
+    "name": "halloween",
+    "backgroundUrl": "https://dashboard.targetcs-gaming.org/themes/halloween/bg.png",
+    "accentColor": "#ff7a00"
+  },
+
+  "fastdl": {
+    "enabled": true,
+    "baseUrl": "https://dashboard.targetcs-gaming.org/fastdl/"
+  },
+
+  "startup": {
+    "autoStart": true,
+    "silentMode": true,
+    "exitAfterUpdate": true
+  }
 }
