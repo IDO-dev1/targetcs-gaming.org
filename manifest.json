@@ -38,15 +38,19 @@
     "backgroundUrl": "https://dashboard.targetcs-gaming.org/themes/halloween/bg.png",
     "accentColor": "#ff7a00"
   },
-
   "fastdl": {
     "enabled": true,
-    "baseUrl": "https://dashboard.targetcs-gaming.org/fastdl/"
+    "baseUrl": "https://fastdl.targetcs-gaming.org/"
   },
-
   "startup": {
     "autoStart": true,
     "silentMode": true,
     "exitAfterUpdate": true
+  },
+  "selfUpdate": {
+    "enabled": true,
+    "latestVersion": "1.0.1",
+    "downloadUrl": "https://dashboard.targetcs-gaming.org/downloads/TargetCSGaming.exe",
+    "releaseNotes": "Bug fixes and improvements."
   }
 }
