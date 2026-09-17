@@ -1,10 +1,10 @@
 {
   "version": "1.0.0",
   "cs16": {
-    "gameMenuUrl": "https://dashboard.targetcs-gaming.org/updater/cstrike/GameMenu.res"
+    "gameMenuUrl": "https://dashboard.targetcs-gaming.org/app/updater/cstrike/GameMenu.res"
   },
   "czero": {
-    "gameMenuUrl": "https://dashboard.targetcs-gaming.org/updater/czero/GameMenu.res"
+    "gameMenuUrl": "https://dashboard.targetcs-gaming.org/app/updater/czero/GameMenu.res"
   },
   "servers": [
     {
@@ -35,7 +35,7 @@
 
   "theme": {
     "name": "halloween",
-    "backgroundUrl": "https://dashboard.targetcs-gaming.org/themes/halloween/bg.png",
+    "backgroundUrl": "https://dashboard.targetcs-gaming.org/app/themes/halloween.png",
     "accentColor": "#ff7a00"
   },
   "fastdl": {
@@ -50,7 +50,7 @@
   "selfUpdate": {
     "enabled": true,
     "latestVersion": "1.0.1",
-    "downloadUrl": "https://dashboard.targetcs-gaming.org/downloads/TargetCSGaming.exe",
+    "downloadUrl": "https://dashboard.targetcs-gaming.org/app/downloads/TargetCSGaming.exe",
     "releaseNotes": "Bug fixes and improvements."
   }
 }
