@@ -9,6 +9,7 @@ public class UpdateManifest
     public ThemeManifest Theme { get; set; } = new();
     public FastDlManifest FastDl { get; set; } = new();
     public StartupOptions Startup { get; set; } = new();
+    public SelfUpdateManifest SelfUpdate { get; set; } = new();
 }
 
 public class GameUpdate

@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using TargetCS_Gaming.org.Models;
 
 namespace TargetCS_Gaming.org.Services;
@@ -7,6 +9,12 @@ namespace TargetCS_Gaming.org.Services;
 public class ThemeManager
 {
     private readonly HttpClient _http;
+
+    private static readonly string ThemeCacheDirectory =
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "TargetCS-Gaming.org",
+            "Themes");
 
     public ThemeManager()
     {
@@ -18,7 +26,7 @@ public class ThemeManager
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("TargetCS-Gaming.org/1.0");
     }
 
-    public async Task<Image?> DownloadBackgroundAsync(
+    public async Task<Image?> GetThemeBackgroundAsync(
         ThemeManifest theme,
         CancellationToken cancellationToken = default)
     {
@@ -28,10 +36,32 @@ public class ThemeManager
         if (string.IsNullOrWhiteSpace(theme.BackgroundUrl))
             return null;
 
+        Directory.CreateDirectory(ThemeCacheDirectory);
+
+        var cacheFile = GetCacheFilePath(theme);
+
+        if (File.Exists(cacheFile))
+        {
+            try
+            {
+                using var stream = File.OpenRead(cacheFile);
+                return Image.FromStream(stream);
+            }
+            catch
+            {
+                File.Delete(cacheFile);
+            }
+        }
+
         try
         {
             var bytes = await _http.GetByteArrayAsync(
                 theme.BackgroundUrl,
+                cancellationToken);
+
+            await File.WriteAllBytesAsync(
+                cacheFile,
+                bytes,
                 cancellationToken);
 
             using var stream = new MemoryStream(bytes);
@@ -56,5 +86,22 @@ public class ThemeManager
         {
             return Color.White;
         }
+    }
+
+    private string GetCacheFilePath(ThemeManifest theme)
+    {
+        var key = $"{theme.Name}|{theme.BackgroundUrl}";
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(key));
+        var hash = Convert.ToHexString(hashBytes).ToLowerInvariant();
+
+        var extension = Path.GetExtension(
+            new Uri(theme.BackgroundUrl).AbsolutePath);
+
+        if (string.IsNullOrWhiteSpace(extension))
+            extension = ".png";
+
+        return Path.Combine(
+            ThemeCacheDirectory,
+            $"{theme.Name}_{hash}{extension}");
     }
 }
