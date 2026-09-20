@@ -24,7 +24,7 @@ public partial class MainForm : Form
     private string? _czeroRoot;
 
     private const string ManifestUrl =
-        "https://targetcs-gaming.org/updater/manifest.json";
+        "https://dashboard.targetcs-gaming.org/app/manifest.json";
 
     private const string CurrentAppVersion =
         "1.0.0";
